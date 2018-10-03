@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+{%load staticfiles%}
+<html>
+<head>
+	<title>Order Dishes</title>
+	<meta charset="utf-8">
+  	<meta name="viewport" content="width=device-width, initial-scale=1">
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+  	<link href="https://fonts.googleapis.com/css?family=Courgette|Gloria+Hallelujah|Lobster|Satisfy" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+  	<link rel="stylesheet" type="text/css" href="{%static 'css/book.css'%}">
+		<script type="text/javascript">
+			var cartdish=[];
+			var cartquan=[];
+			var cartprice=[];
+			var carttotalprice=[];
+			var cartalltotalprice=0;
+
+			function removebut(t){
+				var thistr=t.parentNode.parentNode;
+				var tempdish=thistr.childNodes.item(".tempdish").textContent
+				console.log(tempdish);
+				console.log(thistr);
+				var removedindex=cartdish.indexOf(tempdish);
+
+				var ctotprice=carttotalprice[removedindex];
+				console.log(removedindex);
+				console.log("This is final price:"+cartalltotalprice);
+				cartalltotalprice-=parseInt(ctotprice);
+				console.log("This is final price:"+cartalltotalprice);
+				cartdish.splice(removedindex,1);
+				cartquan.splice(removedindex,1);
+				cartprice.splice(removedindex,1);
+				carttotalprice.splice(removedindex,1);
+				$("#subtotalcol3").text(cartalltotalprice);
+				thistr.remove();
+
+				var thistable=document.getElementById("listtable");
+				for(var i=0,row;row=thistable.rows[i];i++){
+					if(row.cells[0].innerHTML==tempdish){
+						row.cells[3].children[0].disabled=false;
+					}
+				}
+			}
+
+			$(document).ready(function(){
+				var currrow;
+				var currdish;
+				var currprice;
+				var currtotalprice;
+
+				$(".btn.btn-block.own").on('click',function(e){
+					e.preventDefault();
+					$(this).prop('disabled',true);
+					currrow=$(this).closest("tr");
+					currdish=$(currrow).find("#currdish").text();
+					currprice=$(currrow).find("#currprice").text();
+					console.log(currdish);
+					console.log(currprice);
+					$("#quantity").val("");
+					$('#quanModal').modal('toggle');
+					$("#dish").val(currdish);
+					$("#price").val(currprice);
+				});
+				$("#addnewsubmit").on('click',function(e){
+					e.preventDefault();
+					var currquan=$("#quantity").val();
+					cartdish.push(currdish);
+					cartquan.push(currquan);
+					cartprice.push(currprice);
+					currtotalprice=parseInt(currprice)*currquan;
+					carttotalprice.push(currtotalprice);
+					cartalltotalprice+=currtotalprice;
+					console.log(cartdish);console.log(cartquan);console.log(cartprice);console.log(carttotalprice);console.log(cartalltotalprice);
+
+					$("#cartbody").append("<tr><td class='tempdish'>"+currdish+"</td><td>"+currquan+"</td><td>"+currtotalprice+"</td><td>"+"<button class='btn btn-sm' onclick='removebut(this)'>&#10006</button>"+"</td></tr>");
+					$("#subtotalcol3").text(cartalltotalprice);
+				});
+
+				$("#finalsubmission").on('click',function(){
+					if(cartdish.length==0){
+						console.log("okay");
+					}
+					else{
+						$.ajax({
+	            type:'POST',
+	            url:'{%url "user:finalize_order" %}',
+	            dataType:"json",
+	            data:{
+								'dishes[]':cartdish,
+	              'quantities[]':cartquan,
+								'res_id':{{restaurant.id}},
+	            },
+	            success:function(payload){
+								console.log(payload.success);
+								location.href = "{%url 'user:mainpage_user'%}";
+	            },
+	          });
+					}
+				});
+			});
+		</script>
+</head>
+<body>
+
+
+	<div class="modal fade" id="quanModal" role="dialog">
+		<div class="modal-dialog modal-sm">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Add Menu</h4>
+				</div>
+				<div class="modal-body">
+					{%csrf_token%}
+					<div class="form-group">
+						<label for="dish">Dish:</label>
+						<input type="text" class="form-control" id="dish" disabled>
+					</div>
+					<div class="form-group">
+						<label for="price">Price:</label>
+						<input type="text" class="form-control" id="price" disabled>
+					</div>
+					<div class="form-group">
+						<label for="quantity">Quantity:</label>
+						<input type="number" class="form-control" id="quantity" min="0">
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" id="addnewsubmit">Submit</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<nav class="navbar sticky-top navbar-expand-md inner">
+      <a class="navbar-brand cravato" href="#">Cravato</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarsExample04">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item dropdown dropleft">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Username</a>
+            <div class="dropdown-menu" aria-labelledby="dropdown04">
+              <a class="dropdown-item" href="#"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Your Orders</a>
+              <a class="dropdown-item" href="#"><i class="fa fa-user" aria-hidden="true"></i> Profile</a>
+              <a class="dropdown-item" href="#"><i class="fa fa-star" aria-hidden="true"></i> Ratings</a>
+              <a class="dropdown-item" href="{%url 'user:logout_user'%}"><i class="fa fa-power-off" aria-hidden="true"></i> Logout</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container">
+    <div class="row">
+	    <div class="col-sm-8">
+          	<div class="card eqht" style="margin-top:20px">
+            	<div class="card-body">
+	                <h4 class="card-title">{{restaurant.restaurant_name}}<span class="badge badge-pill rate" style="float: right;">{{restaurant.restaurant_avgrating}}</span></h4> <hr>
+	                <div class="text-right" style="margin-top: 5px;">
+	                  	<p class="card-text"><strong style="float: left;">Address:</strong> {{restaurant.restaurant_address}}
+		                <br><strong style="float: left;">Pincode:</strong> {{restaurant.restaurant_pincode}}
+		                <br><strong style="float: left;">Hours:</strong> {{restaurant.restaurant_starttime}} - {{restaurant.restaurant_endtime}}</p>
+	                </div>
+	                <small style="margin-top: 15px;">21523 orders delivered</small>
+            	</div>
+          	</div>
+          	<div class="container">
+			  <br>
+			  <!-- Nav tabs -->
+			  <ul class="nav nav-tabs" role="tablist">
+			    <li class="nav-item">
+			      <a class="nav-link active restdetails" data-toggle="tab" href="#menu">Menu</a>
+			    </li>
+			    <li class="nav-item">
+			      <a class="nav-link restdetails" data-toggle="tab" href="#rate" onclick="myFunction()">Ratings</a>
+			    </li>
+			  </ul>
+
+			  <!-- Tab panes -->
+			  <div class="tab-content">
+			    <div id="menu" class="container tab-pane active"><br>
+			      <table class="table table-sm table-striped table-hover" id="listtable">
+                <thead>
+                    <tr>
+                        <th style="width: 20%"> Dish </th>
+                        <th style="width: 50%" id="desc"> Contents </th>
+                        <th style="width: 20%" id="desc"> Price </th>
+                        <th style="width: 10%"> Action </th>
+                    </tr>
+                </thead>
+                <tbody>
+									{%for menu in menus%}
+                    <tr>
+                        <td id="currdish">{{menu.dish}}</td>
+                        <td id="desc">{{menu.dish_description}}</td>
+                        <td id="currprice">{{menu.dish_price}}</td>
+                        <td>
+													<button type="button" class="btn btn-block own">Add</button>
+                        </td>
+                    </tr>
+                  {%endfor%}
+                </tbody>
+            </table>
+			    </div>
+			    <div id="rate" class="container tab-pane fade"><br>
+						{%if ratings%}
+							{%for rating in ratings%}
+				      <div class="card rate">
+	              <div class="card-body text-left">
+	                <h5 class="card-title">
+	                	{{rating.rating_user.name}}
+	                	<span class="badge badge-pill rate" style="float: right;">{{rating.rating_value}}<i class="fa fa-star" aria-hidden="true" style="color: #fc7f02"></i></span>
+	                </h3>
+	                <p class="card-text text-left">{{rating.rating_description}}</p>
+	              </div>
+	            </div>
+							{%endfor%}
+						{%else%}
+						<h4>No Ratings</h4>
+						{%endif%}
+			    </div>
+			  </div>
+			</div>
+	    </div>
+	    <div class="col-sm-4">
+        <div class="card text-left" style="margin-top:20px">
+          <div class="card-header text-left">
+            <i class="fa fa-cart-plus" aria-hidden="true" style="color: #b22b03"></i> Your Order
+          </div>
+	        <table class="table table-sm table-hover" id="carttable">
+				<thead>
+				    <tr>
+				      <th scope="col">Dish</th>
+				      <th scope="col">Qty</th>
+				      <th scope="col">Price</th>
+							<th style="width:10%"></th>
+				    </tr>
+				</thead>
+				<tbody id="cartbody">
+
+				</tbody>
+				<thead id="subtotal">
+				    <tr>
+				      <th id="subtotalcol1" scope="col">Subtotal</th>
+				      <th id="subtotalcol2" scope="col"></th>
+				      <th id="subtotalcol3" scope="col">0</th>
+							<th></th>
+				    </tr>
+				</thead>
+			</table>
+			<div style="margin-top: 5px;">
+                <button type="button" class="btn btn-block btn-success" id="finalsubmission">Continue</button>
+            </div>
+        </div>
+        <hr class="d-sm-none">
+      </div>
+	</div>
+	</div>
+  <script type="text/javascript">
+		var removedindex=100;
+    function myFunction() {
+    var element = document.getElementById("menu");
+    element.classList.add("fade");
+    }
+
+		// function abc(){
+		// 	var ctotprice=carttotalprice[removedindex];
+		// 	console.log(removedindex);
+		// 	console.log("This is final price:"+cartalltotalprice);
+		// 	cartalltotalprice-=parseInt(ctotprice);
+		// 	console.log("This is final price:"+cartalltotalprice);
+		// 	cartdish.splice(removedindex,1);
+		// 	cartquan.splice(removedindex,1);
+		// 	cartprice.splice(removedindex,1);
+		// 	carttotalprice.splice(removedindex,1);
+		// 	$("#subtotalcol3").text(cartalltotalprice);
+		// }
+  </script>
+</body>
+</html>

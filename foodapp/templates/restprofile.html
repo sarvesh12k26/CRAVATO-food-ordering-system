@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+{%load staticfiles%}
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="{%static 'css/restprof.css'%}">
+
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $(".check").change(function(){
+        if(this.checked){
+          var idd=$(this).closest("tr")[0].id;
+          //$(this).closest("tr")[0].remove();
+          console.log(idd);
+          $(this).prop("disabled",true);
+
+          $.ajax({
+            type:'GET',
+            url:'/restaurant/deleteorder/',
+            dataType:"json",
+            data:{
+              id:idd,
+            },
+            success:function(payload){
+              alert(payload.success);
+
+            }
+          });
+        }
+      });
+
+      $("#editsubmit").on('click',function(e){
+        e.preventDefault();
+        var name=$("#name").val();
+        var address=$("#address").val();
+        var pincode=$("#pincode").val();
+        var contact=$("#contact").val();
+        var starttime=$("#openingtime").val();
+        var endtime=$("#closingtime").val();
+        console.log(name+address+pincode+contact+starttime+endtime);
+
+        $.ajax({
+          type:'POST',
+          url:'/restaurant/editprofile/',
+          dataType:"json",
+          data:{
+            name:name,
+            address:address,
+            pincode:pincode,
+            contact:contact,
+            starttime:starttime,
+            endtime:endtime,
+          },
+          success:function(payload){
+            $('#sname').text(name);
+            $('#saddress').text(address);
+            $('#spincode').text(pincode);
+            $('#scontact').text(contact);
+            $('#sstarttime').text(starttime);
+            $('#sendtime').text(endtime);
+          },
+        });
+
+      });
+
+    });
+  </script>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#"><em><strong>Cravato</strong></em></a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li class="active"><a href="{% url 'mainpage_restaurant'%}"><span class="glyphicon glyphicon-home"></span> Home </a></li>
+      <li><a href="{% url 'menu_restaurant'%}"><span class="glyphicon glyphicon-list-alt"></span> Menu </a></li>
+      <li><a href="{%url 'rating_restaurant'%}"><span class="glyphicon glyphicon-thumbs-up"></span> Ratings </a></li>
+      <li><a href="{% url 'logout_restaurant'%}"><span class="glyphicon glyphicon-off"></span> Logout </a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="fluid-container">
+      <div class="container">
+        <div class="row">
+          <!-- Resto Sidebar-->
+          <div class="resto-sidebar col-xl-3 col-lg-4 mb-md-5 rounded">
+            <div class="resto-profile">
+              <img src="https://static.thenounproject.com/png/76795-200.png">
+              <h5><span id="sname">{{restaurant.restaurant_name}}</span></h5>
+              <p><strong>Username:</strong> <span>{{user.username}}</span></p>
+              <p><strong>Address:</strong> <span id="saddress">{{restaurant.restaurant_address}}</span>. Mumbai-<span id="spincode">{{restaurant.restaurant_pincode}}</span></p>
+              <p><strong>Email:</strong> <span>{{user.email}}</span></p>
+              <p><strong>Contact:</strong> <span id="scontact">{{restaurant.restaurant_mobile}}</span></p>
+              <p><strong>Opening Time:</strong> <span id="sstarttime">{{restaurant.restaurant_starttime|time:'H:i'}}</span></p>
+              <p><strong>Closing Time:</strong> <span id="sendtime">{{restaurant.restaurant_endtime|time:'H:i'}}</span></p>
+              <p><button type="submit" class="btn btn-info btn-lg" data-toggle="modal" data-target="#editprofileModal">Edit</button></p>
+            </div>
+          </div>
+
+          <div class="modal fade" id="editprofileModal" role="dialog">
+            <div class="modal-dialog modal-md">
+
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Modal Header</h4>
+                </div>
+                <div class="modal-body">
+                  {%csrf_token%}
+                  <form class="form-horizontal" action="">
+                    <div class="form-group">
+                      <label class="control-label col-sm-2" for="name">Name:</label>
+                      <div class="col-sm-10">
+                        <input type="text" class="form-control" id="name" placeholder="Enter Hotel Name" value={{restaurant.restaurant_name}}>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-sm-2" for="address">Address:</label>
+                      <div class="col-sm-10">
+                        <textarea class="form-control" id="address" rows="2" cols="80" placeholder="Enter Address">{{restaurant.restaurant_address}}</textarea>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-sm-2" for="pincode">Pincode:</label>
+                      <div class="col-sm-10">
+                        <input type="number" class="form-control" id="pincode" placeholder="Enter pincode" value={{restaurant.restaurant_pincode}}>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-sm-2" for="contact">Contact:</label>
+                      <div class="col-sm-10">
+                        <input type="number" class="form-control" id="contact" placeholder="Enter contact" value={{restaurant.restaurant_mobile}}>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-sm-2" for="openingtime">Opening Time:</label>
+                      <div class="col-sm-10">
+                        {%if restaurant.restaurant_starttime%}
+                        <input type="time" class="form-control" id="openingtime" placeholder="Enter Opening Time" value={{restaurant.restaurant_starttime|time:'H:i'}}>
+                        {%else%}
+                        <input type="time" class="form-control" id="openingtime" placeholder="Enter Opening Time" value="06:00">
+                        {%endif%}
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-sm-2" for="closingtime">Closing Time:</label>
+                      <div class="col-sm-10">
+                        {%if restaurant.restaurant_endtime%}
+                        <input type="time" class="form-control" id="closingtime" placeholder="Enter Closing Time" value={{restaurant.restaurant_endtime|time:'H:i'}}>
+                        {%else%}
+                        <input type="time" class="form-control" id="closingtime" placeholder="Enter Closing Time" value="10:00">
+                        {%endif%}
+                      </div>
+                    </div>
+
+                  </form>
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal" id="editsubmit">Submit</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="col-lg-8 col-xl-9 pl-lg-3">
+          	<div class="table-responsive resto-order">
+	            <table class="table">
+	              <thead>
+	                <tr>
+	                  <th>Order No</th>
+	                  <th>User</th>
+	                  <th>Dish</th>
+	                  <th>Quantity</th>
+                    <th>Order At</th>
+	                  <th>Delivery</th>
+	                </tr>
+	              </thead>
+	              <tbody>
+	                <tr>
+	                  <td># 1735</td>
+	                  <td>Atharva15</td>
+	                  <td>Oriental Meal</td>
+	                  <td>1</td>
+                    <td>12|2|2018</td>
+	                  <td><input type="checkbox" value=""></td>
+	                </tr>
+	                <tr>
+	                  <td># 1734</td>
+	                  <td>Rahil2018</td>
+	                  <td>Chocolate Brownie</td>
+	                  <td>4</td>
+                    <td>12|2|2018</td>
+	                  <td><input type="checkbox" value=""></td>
+	                </tr>
+	                <tr>
+	                  <td># 1730</td>
+	                  <td>Hrishikesh</td>
+	                  <td>Gujarati Thali</td>
+	                  <td>2</td>
+                    <td>13|2|2018</td>
+	                  <td><input type="checkbox" value=""></td>
+	                </tr>
+	                <tr>
+	                  <td># 1705</td>
+	                  <td>Kohli18</td>
+	                  <td>Russian Sandwich</td>
+	                  <td>3</td>
+                    <td>14|2|2018</td>
+	                  <td><input type="checkbox" value=""></td>
+	                </tr>
+                  {%for order in orders%}
+                    <tr id={{order.id}}>
+  	                  <td>{{order.id}}</td>
+  	                  <td>{{order.order_user.user.username}}</td>
+  	                  <td>{{order.order_dish.dish}}</td>
+  	                  <td>{{order.quantity}}</td>
+                      <td>{{order.order_at|date:'d|m|Y H:i'}}</td>
+  	                  <td><input type="checkbox" class="check" id="check{{order.id}}"></td>
+  	                </tr>
+                  {%endfor%}
+	              </tbody>
+	            </table>
+          </div>
+          </div>
+        </div>
+      </div>
+</div>
+<script type="text/javascript">
+	$( '.navbar-nav a' ).on( 'click', function () {
+	$( '.navbar-nav' ).find( 'li.active' ).removeClass( 'active' );
+	$( this ).parent( 'li' ).addClass( 'active' );
+});
+</script>
+</body>
+</html>

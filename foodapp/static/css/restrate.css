@@ -1,0 +1,48 @@
+.row.equal-height {
+    display: flex;
+    flex-wrap: wrap;
+}
+.row.equal-height > [class*='col-'] {
+    display: flex;
+    flex-direction: column;
+}
+
+.card {
+    flex: 1;
+}
+.parent {
+	background: url("https://previews.123rf.com/images/lumaxart2d/lumaxart2d0903/lumaxart2d090300242/4412424-5-star-restaurant-rating.jpg") no-repeat fixed;
+	background-size:cover;
+	border-radius: 10px;
+	margin: 3px 2px; 
+	font-family: 'Bookman Old Style';
+	width: auto;
+}
+.rate {
+	margin: 8px 5px;
+	border-radius: 15px;
+	/*border: 2px solid white;*/
+	background: rgba(234, 182, 182,0.95); center no-repeat fixed;
+	background-size: cover; 
+	width: auto;
+	padding: 10px;
+	color: rgb(109, 11, 4);
+}
+.card-text {
+	font-size: 15px;
+	color:#b20e05;
+}
+.panel-footer {
+	background: none;
+	color:#ff6100;
+}
+.quote{
+	margin: 10px 3px;
+	font-family: 'lato';	
+	font-size: 20px;
+	color:#021c07;
+}
+.quote p em {
+	font-size: 20px;
+	color: #2c0156;
+}

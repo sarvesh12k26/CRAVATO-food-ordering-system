@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+{%load staticfiles%}
+<html lang="en">
+  <head>
+    <title>Restaurant Ratings</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round|Open+Sans">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{%static 'css/restprof.css'%}">
+    <link rel="stylesheet" type="text/css" href="{%static 'css/restrate.css'%}">
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#"><em><strong>Cravato</strong></em></a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="{% url 'mainpage_restaurant'%}"><span class="glyphicon glyphicon-home"></span> Home </a></li>
+          <li><a href="{% url 'menu_restaurant'%}"><span class="glyphicon glyphicon-list-alt"></span> Menu </a></li>
+          <li class="active"><a href="{%url 'rating_restaurant'%}"><span class="glyphicon glyphicon-thumbs-up"></span> Ratings </a></li>
+          <li><a href="{% url 'logout_restaurant'%}"><span class="glyphicon glyphicon-off"></span> Logout </a></li>
+        </ul>
+      </div>
+    </nav>
+    <div class="fluid-container">
+      <div class="container">
+        <div>
+          <h3 class="text-center" style="color:#021c07;"><em>Feedback</em></h3>
+        </div>
+        <div class="row parent equal-height">
+          <div class="col-12 col-md-3">
+            <div class="card rate">
+              <div class="card-body text-center">
+                <h3 class="card-title">John Doe</h3>
+                <p class="card-text">The Gujarati Thali is very delicious. The quantity was enough for 2 person with no compromise in quality.</p>
+                <h5 class="panel-footer">4.5 <span class="glyphicon glyphicon-star"></span></h5>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="card rate">
+              <div class="card-body text-center">
+                <h3 class="card-title">Tony Stark</h3>
+                <p class="card-text">Best Chocolate Brownie in the world. I have never tasted a brownie so amazing.</p>
+                <h5 class="panel-footer">4 <span class="glyphicon glyphicon-star"></span></h5>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="card rate">
+              <div class="card-body text-center">
+                <h3 class="card-title">Clark Kent</h3>
+                <p class="card-text">The food isn't good. I should just return to Krypton. Worst food in the whole universe.</p>
+                <h5 class="panel-footer">1 <span class="glyphicon glyphicon-star"></span></h5>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="card rate">
+              <div class="card-body text-center">
+                <h3 class="card-title">Hrishikesh Sawant</h3>
+                <p class="card-text">Non-veg bhi serve karo, your's will be the best in SoBo. Veg khanna thikthak hai!</p>
+                <h5 class="panel-footer">2.5 <span class="glyphicon glyphicon-star"></span></h5>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="card rate">
+              <div class="card-body text-center">
+                <h3 class="card-title">Rahil Jhaveri</h3>
+                <p class="card-text">Jain khana mil raha hai, abb aur kya chahiye. Best food and on-time delivery.</p>
+                <h5 class="panel-footer">5 <span class="glyphicon glyphicon-star"></span></h5>
+              </div>
+            </div>
+          </div>
+          {%for rating in ratings%}
+          <div class="col-12 col-md-3">
+            <div class="card rate">
+              <div class="card-body text-center">
+                <h3 class="card-title">{{rating.rating_user}}</h3>
+                <p class="card-text">{{rating.rating_description}}</p>
+                <h5 class="panel-footer">{{rating.rating_value}} <span class="glyphicon glyphicon-star"></span></h5>
+              </div>
+            </div>
+          </div>
+          {%endfor%}
+      </div>
+      <div class="quote">
+        <p class="text-center"><em>There is nothing permanent except change.</em><br>--Heraclitus</p>
+      </div>
+    </div>
+  </body>
+</html>

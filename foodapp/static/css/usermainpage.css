@@ -1,0 +1,75 @@
+body {
+	background: #d6c5c0;
+	font-family: 'Lobster';
+}
+nav {
+	font-family: 'Courgette';
+}
+nav a.cravato{
+  	color: #e03400;
+}
+nav div ul li a{
+  	color: brown;
+}
+nav div ul li a:hover{
+  	color: #f77f00;
+}
+.navbar-toggler-icon {
+background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,0,0, 0.75)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+#navbarsExample04 ul li div a:hover{
+  	color: #b22b03;
+  	background: #ed7f40;
+}
+hr {
+	border: 0;
+	height: 1px;
+	background: #333;
+	background-image: -webkit-linear-gradient(left, #ccc, #333, #ccc);
+	background-image: -moz-linear-gradient(left, #ccc, #333, #ccc);
+	background-image: -ms-linear-gradient(left, #ccc, #333, #ccc);
+	background-image: -o-linear-gradient(left, #ccc, #333, #ccc);
+}
+@media (min-width: 768px) {
+    .card-columns {
+        column-count: 2;
+    }
+}
+
+.card ul li.lgi a {
+	font-family: 'Courgette';
+	text-decoration: none;
+	color: #a02104;
+}
+.card ul li.lgi a:hover {
+	color: #015c89;
+}
+
+.card div.card-body h4.card-title {
+	color:#e03400;
+}
+.card div.card-body div.text-right p.card-text {
+	font-family: 'Courgette' !important;
+	color: #000000;
+}
+h3.text-center {
+	font-family: 'Satisfy' !important;
+	color: #29034f;
+}
+
+button.own {
+	background: #e85500;
+	color: #29034f;
+	border: none;
+}
+button.own:hover {
+	background: #29034f;
+	color: #e85500;
+}
+.card-body h4 span.rate {
+	background: #fca1a1;
+	color: #015c89;
+}
+.card-body small {
+	color:#015c89 ;
+}

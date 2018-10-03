@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+{%load staticfiles%}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Restaurant Menu</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round|Open+Sans">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="{%static 'css/restprof.css'%}">
+    <link rel="stylesheet" type="text/css" href="{%static 'css/restmenu.css'%}">
+
+    <script type="text/javascript">
+    $(document).ready(function(){
+    	$("#addnewsubmit").on('click',function(e){
+          e.preventDefault();
+          $('#addmodal').modal('toggle');
+          $.ajax({
+            type:'GET',
+            url:'/restaurant/addmenu/',
+            dataType:"json",
+            data:{
+              dish:$('#dish').val(),
+              description:$('#description').val(),
+              category:$('#category').val(),
+              price:$('#price').val(),
+            },
+            success:function(payload){
+              $("#addbody").append('<tr id='+payload.id+'><td id="menudish">'+payload.dish+'</td><td id="menudesc">'+payload.description+'</td><td id="menuprice">'+payload.price+'</td><td id="menucategory">'+payload.category+'</td><td><a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a><a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a></td></tr>');
+              $("#dish").val("");
+              $("#description").val("");
+              $("#category").val("");
+              $("#price").val("");
+
+            },
+
+          });
+      });
+
+      $(".edit").on('click',function(e){
+        var thistr=$(this).closest("tr");
+        var dish=thistr.find("#menudish").text();
+        var desc=thistr.find("#menudesc").text();
+        var price=thistr.find("#menuprice").text();
+        var category=thistr.find("#menucategory").text();
+        $("#editModal #editid").val(this.id);
+        $("#editModal #editdish").val(dish);
+        $("#editModal #editdescription").val(desc);
+        $("#editModal #editprice").val(price);
+        $("#editModal #editcategory").val(category);
+      });
+
+      $("#editsubmit").on('click',function(e){
+          e.preventDefault();
+          $('#editmodal').modal('toggle');
+          $.ajax({
+            type:'GET',
+            url:'/restaurant/editmenu/',
+            dataType:"json",
+            data:{
+              dish:$('#editdish').val(),
+              id:$('#editid').val(),
+              description:$('#editdescription').val(),
+              category:$('#editcategory').val(),
+              price:$('#editprice').val(),
+            },
+            success:function(payload){
+              var id= $('#editid').val();
+              $('#'+id).children("#menudish").text(payload.dish);
+              $('#'+id).children("#menudesc").text(payload.description);
+              $('#'+id).children("#menuprice").text(payload.price);
+              $('#'+id).children("#menucategory").text(payload.category);
+            },
+
+          });
+      });
+
+    });
+    </script>
+</head>
+<body>
+    <nav class="navbar">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#"><em><strong>Cravato</strong></em></a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="{% url 'mainpage_restaurant'%}"><span class="glyphicon glyphicon-home"></span> Home </a></li>
+          <li class="active"><a href="{% url 'menu_restaurant'%}"><span class="glyphicon glyphicon-list-alt"></span> Menu </a></li>
+          <li><a href="{%url 'rating_restaurant'%}"><span class="glyphicon glyphicon-thumbs-up"></span> Ratings </a></li>
+          <li><a href="{% url 'logout_restaurant'%}"><span class="glyphicon glyphicon-off"></span> Logout </a></li>
+        </ul>
+      </div>
+    </nav>
+    <div class="fluid-container">
+    <div class="container">
+        <div class="row">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-8"><h2>{{menus.0.restaurant.restaurant_name}} <b>Menu</b></h2></div>
+                    <div class="col-sm-4">
+                        <button type="button" class="btn btn-primary add-new" data-toggle="modal" data-target="#addModal"><i class="fa fa-plus"></i> Add New</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="addModal" role="dialog">
+              <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add Menu</h4>
+                  </div>
+                  <div class="modal-body">
+                    {%csrf_token%}
+                    <div class="form-group">
+                      <label for="dish">Dish:</label>
+                      <input type="text" class="form-control" id="dish">
+                    </div>
+                    <div class="form-group">
+                      <label for="description">Description:</label>
+                      <textarea class="form-control" id="description" rows="5" cols="40"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="category">Category:</label>
+                      <input type="text" class="form-control" id="category">
+                    </div>
+                    <div class="form-group">
+                      <label for="price">Price:</label>
+                      <input type="number" class="form-control" id="price">
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="addnewsubmit">Submit</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th> Dish </th>
+                        <th > Contents </th>
+                        <th > Price </th>
+                        <th> Category </th>
+                        <th> Actions </th>
+                    </tr>
+                </thead>
+                <tbody id="addbody">
+                    {%for menu in menus%}
+                    <tr id="{{menu.id}}">
+                        <td id="menudish">{{menu.dish}}</td>
+                        <td id="menudesc">{{menu.dish_description}}</td>
+                        <td id="menuprice">{{menu.dish_price}}</td>
+                        <td id="menucategory">{{menu.category}}</td>
+                        <td>
+                            <a class="edit" id="{{menu.id}}" title="Edit" data-toggle="modal" data-target="#editModal"><i class="material-icons">&#xE254;</i></a>
+                            <a class="delete" href="{%url 'deletemenu' menu.id%}" title="Delete"><i class="material-icons">&#xE872;</i></a>
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+
+            <div class="modal fade" id="editModal" role="dialog">
+              <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Edit Menu</h4>
+                  </div>
+                  <div class="modal-body">
+                    {%csrf_token%}
+                    <div class="form-group">
+                      <label for="dish">Dish:</label>
+                      <input type="text" class="form-control" id="editdish">
+                    </div>
+                    <div class="form-group">
+                      <input type="hidden" class="form-control" id="editid">
+                    </div>
+                    <div class="form-group">
+                      <label for="description">Description:</label>
+                      <textarea class="form-control" id="editdescription" rows="5" cols="40"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="category">Category:</label>
+                      <input type="text" class="form-control" id="editcategory">
+                    </div>
+                    <div class="form-group">
+                      <label for="price">Price:</label>
+                      <input type="number" class="form-control" id="editprice">
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="editsubmit">Submit</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $( '.navbar-nav a' ).on( 'click', function () {
+        $( '.navbar-nav' ).find( 'li.active' ).removeClass( 'active' );
+        $( this ).parent( 'li' ).addClass( 'active' );
+    });
+</script>
+</body>
+</html>

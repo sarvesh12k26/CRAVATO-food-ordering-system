@@ -1,0 +1,59 @@
+body {
+	background: linear-gradient(#bcb7a6,#f7594f) center no-repeat fixed;
+}
+.navbar {
+	background-color: rgba(58, 8, 8, 0.45);
+	color: rgb(109, 11, 4);
+}
+.navbar-brand em {
+	color:#b20e05;
+	text-decoration:none;
+	font-family:'Lato';
+	font-size:26px;
+}
+.navbar ul li a {
+	color: rgb(145, 17, 2);
+	text-transform: uppercase;
+}
+.navbar ul li a:hover{
+	color: #11a38f;
+}
+.navbar ul li.active > a{
+	background-color: #edecea;
+	color: #11a38f;
+}
+table{
+	font-size: 15px;
+}
+thead {
+	background:#a52f27;
+	padding: 2px;
+}
+tr:hover {
+	background: #efc197;
+}
+.resto-sidebar{
+	font-family: sans-serif;
+	color:#021c07;
+	border:5px none;
+	padding: 10px;
+    border-radius: 15px;
+	background: rgba(153, 117, 122, 0.45);
+	min-height: 300px;
+	min-width: 350px;
+	text-align: center;
+	max-width:100vh;
+	max-height:100vh;
+	margin-left: -30px;
+	font-size: 18px;
+	font-weight: lighter;
+}
+.resto-profile h5 {
+	color: rgb(30, 0, 61);
+	font-size: 25px;
+	font-family: 'Lato';
+	font-style: italic;
+}
+.resto-order {
+	padding: 5px;
+}
